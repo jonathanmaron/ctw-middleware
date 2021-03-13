@@ -1,7 +1,7 @@
 {
     "name": "ctw/ctw-middleware",
     "type": "library",
-    "description": "This packages provides common functionality for the other ctw/ctw-middleware-* packages.",
+    "description": "This packages provides common functionality for the other PSR-15 ctw/ctw-middleware-* packages.",
     "license": "BSD-3-Clause",
     "config": {
         "sort-packages": true
