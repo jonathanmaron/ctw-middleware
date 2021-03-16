@@ -9,9 +9,9 @@ use Psr\Http\Server\MiddlewareInterface;
 abstract class AbstractMiddleware implements MiddlewareInterface
 {
     /**
-     * Suffix added to HTML
+     * Suffix added to HTML Responses
      */
-    protected const SUFFIX = '<!-- html: in %d b | out %d b | diff %01.4f %% -->';
+    protected const HTML_SUFFIX = '<!-- html: in %d b | out %d b | diff %01.4f %% -->';
 
     /**
      * Responses with these MIME types are HTML Responses
