@@ -16,7 +16,7 @@ abstract class AbstractMiddleware implements MiddlewareInterface
     /**
      * Responses with these MIME types are HTML Responses
      */
-    private const   HTML_MIME_TYPES
+    protected const   HTML_MIME_TYPES
         = [
             'text/html',
             'application/xhtml',
