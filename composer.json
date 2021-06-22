@@ -42,6 +42,6 @@
             "@phpstan",
             "@test"
         ],
-        "test": "export XDEBUG_MODE=coverage && vendor/bin/phpunit --debug"
+        "test": "export XDEBUG_MODE=coverage && vendor/bin/phpunit"
     }
 }
