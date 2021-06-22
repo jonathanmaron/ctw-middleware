@@ -18,11 +18,11 @@ class MiddlewareTest extends AbstractCase
 
         $constants = $reflectionClass->getConstants();
 
-        $this->assertArrayHasKey('HTML_SUFFIX', $constants);
-        $this->assertArrayHasKey('HTML_MIME_TYPES', $constants);
+        self::assertArrayHasKey('HTML_SUFFIX', $constants);
+        self::assertArrayHasKey('HTML_MIME_TYPES', $constants);
 
-        $this->assertIsString($constants['HTML_SUFFIX']);
-        $this->assertIsArray($constants['HTML_MIME_TYPES']);
+        self::assertIsString($constants['HTML_SUFFIX']);
+        self::assertIsArray($constants['HTML_MIME_TYPES']);
     }
 
     public function testContainsHtmlWithHtmlContentType(): void
@@ -34,7 +34,7 @@ class MiddlewareTest extends AbstractCase
         $response = $response->withHeader('Content-Type', 'text/html');
 
         // @phpstan-ignore-next-line
-        $this->assertTrue($middleware->publicContainsHtml($response));
+        self::assertTrue($middleware->publicContainsHtml($response));
     }
 
     public function testContainsHtmlWithJsonContentType(): void
@@ -46,7 +46,7 @@ class MiddlewareTest extends AbstractCase
         $response = $response->withHeader('Content-Type', 'application/json');
 
         // @phpstan-ignore-next-line
-        $this->assertFalse($middleware->publicContainsHtml($response));
+        self::assertFalse($middleware->publicContainsHtml($response));
     }
 
     public function testContainsHtmlWithNoContentType(): void
@@ -57,7 +57,7 @@ class MiddlewareTest extends AbstractCase
         $response = Dispatcher::run($stack);
 
         // @phpstan-ignore-next-line
-        $this->assertFalse($middleware->publicContainsHtml($response));
+        self::assertFalse($middleware->publicContainsHtml($response));
     }
 
     public function testGetSuffixStatistics(): void
@@ -77,9 +77,9 @@ class MiddlewareTest extends AbstractCase
         // @phpstan-ignore-next-line
         $array = $middleware->publicGetSuffixStatistics($original, $minified);
 
-        $this->assertSame(70, $array[0]);
-        $this->assertSame(49, $array[1]);
-        $this->assertSame(30.0, $array[2]);
+        self::assertSame(70, $array[0]);
+        self::assertSame(49, $array[1]);
+        self::assertSame(30.0, $array[2]);
     }
 
     private function getInstance(): AbstractMiddleware
