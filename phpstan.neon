@@ -1,5 +1,5 @@
 includes:
-    - config/phpstan/common.neon
+    - vendor/ctw/ctw-qa/config/phpstan/common.neon
     - phpstan-baseline.neon
 parameters:
     bootstrapFiles:

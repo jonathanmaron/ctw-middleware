@@ -35,11 +35,11 @@ return static function (ECSConfig $ecsConfig): void {
         ]
     );
 
+    $ecsConfig->sets($sets());
+
     $ecsConfig->rules($rules());
 
     $ecsConfig->rulesWithConfiguration($rulesConfig());
-
-    $ecsConfig->sets($sets());
 
     $ecsConfig->skip($skip());
 };

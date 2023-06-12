@@ -27,9 +27,7 @@ class MiddlewareTest extends AbstractCase
 
     public function testContainsHtmlWithHtmlContentType(): void
     {
-        $stack    = [
-            $middleware = $this->getInstance(),
-        ];
+        $stack    = [$middleware = $this->getInstance()];
         $response = Dispatcher::run($stack);
         $response = $response->withHeader('Content-Type', 'text/html');
 
@@ -39,9 +37,7 @@ class MiddlewareTest extends AbstractCase
 
     public function testContainsHtmlWithJsonContentType(): void
     {
-        $stack    = [
-            $middleware = $this->getInstance(),
-        ];
+        $stack    = [$middleware = $this->getInstance()];
         $response = Dispatcher::run($stack);
         $response = $response->withHeader('Content-Type', 'application/json');
 
@@ -51,9 +47,7 @@ class MiddlewareTest extends AbstractCase
 
     public function testContainsHtmlWithNoContentType(): void
     {
-        $stack    = [
-            $middleware = $this->getInstance(),
-        ];
+        $stack    = [$middleware = $this->getInstance()];
         $response = Dispatcher::run($stack);
 
         // @phpstan-ignore-next-line
@@ -84,8 +78,7 @@ class MiddlewareTest extends AbstractCase
 
     private function getInstance(): AbstractMiddleware
     {
-        return new class extends AbstractMiddleware {
-
+        return new class() extends AbstractMiddleware {
             public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseIface
             {
                 return $handler->handle($request);

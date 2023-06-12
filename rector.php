@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-use Rector\Config\RectorConfig;
-
 use Ctw\Qa\Rector\Config\RectorConfig\DefaultFileExtensions;
+
 use Ctw\Qa\Rector\Config\RectorConfig\DefaultSets;
 use Ctw\Qa\Rector\Config\RectorConfig\DefaultSkip;
+use Rector\Config\RectorConfig;
 
 return static function (RectorConfig $rectorConfig): void {
 
@@ -14,8 +14,6 @@ return static function (RectorConfig $rectorConfig): void {
     $skip           = new DefaultSkip();
 
     $rectorConfig->fileExtensions($fileExtensions());
-
-    $rectorConfig->sets($sets());
 
     $rectorConfig->paths(
         [
@@ -26,10 +24,7 @@ return static function (RectorConfig $rectorConfig): void {
         ]
     );
 
-    $rectorConfig->skip(
-        [
-            ...$skip(),
-            sprintf('%s/test/asset/*', __DIR__)
-        ]
-    );
+    $rectorConfig->sets($sets());
+
+    $rectorConfig->skip([...$skip(), sprintf('%s/test/asset/*', __DIR__)]);
 };
