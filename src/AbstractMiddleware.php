@@ -10,11 +10,13 @@ abstract class AbstractMiddleware implements MiddlewareInterface
 {
     /**
      * Suffix added to HTML Responses
+     * @var string
      */
     protected const HTML_SUFFIX = '<!-- html: in %d b | out %d b | diff %01.4f %% -->';
 
     /**
      * Responses with these MIME types are HTML Responses
+     * @var string[]
      */
     protected const   HTML_MIME_TYPES
         = [
@@ -26,7 +28,7 @@ abstract class AbstractMiddleware implements MiddlewareInterface
     {
         $header = $response->getHeader('Content-Type');
 
-        if (0 === count($header)) {
+        if ([] === $header) {
             return false;
         }
 
@@ -45,10 +47,7 @@ abstract class AbstractMiddleware implements MiddlewareInterface
     /**
      * Return an array of statistics for use in the suffix added to the HTML
      *
-     * @param string $original
-     * @param string $minified
      *
-     * @return array
      */
     protected function getSuffixStatistics(string $original, string $minified): array
     {

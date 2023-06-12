@@ -86,12 +86,6 @@ class MiddlewareTest extends AbstractCase
     {
         return new class extends AbstractMiddleware {
 
-            /**
-             * @param ServerRequestInterface  $request
-             * @param RequestHandlerInterface $handler
-             *
-             * @return ResponseIface
-             */
             public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseIface
             {
                 return $handler->handle($request);
