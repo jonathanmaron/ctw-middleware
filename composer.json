@@ -1,4 +1,4 @@
-{  "minimum-stability": "dev", "prefer-stable": true,  
+{
     "name": "ctw/ctw-middleware",
     "description": "This packages provides common functionality for the other PSR-15 ctw/ctw-middleware-* packages.",
     "license": "BSD-3-Clause",
@@ -21,6 +21,8 @@
         "squizlabs/php_codesniffer": "^3.6",
         "symfony/var-dumper": "^7.0"
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Ctw\\Middleware\\": "src"
