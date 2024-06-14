@@ -1,4 +1,4 @@
-{  "minimum-stability": "dev",  
+{  "minimum-stability": "dev", "prefer-stable": true,  
     "name": "ctw/ctw-middleware",
     "description": "This packages provides common functionality for the other PSR-15 ctw/ctw-middleware-* packages.",
     "license": "BSD-3-Clause",
