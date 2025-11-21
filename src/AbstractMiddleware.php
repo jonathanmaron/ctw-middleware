@@ -18,7 +18,7 @@ abstract class AbstractMiddleware implements MiddlewareInterface
      * Responses with these MIME types are HTML Responses
      * @var string[]
      */
-    protected const   HTML_MIME_TYPES
+    protected const HTML_MIME_TYPES
         = ['text/html', 'application/xhtml'];
 
     protected function containsHtml(ResponseInterface $response): bool
@@ -43,6 +43,7 @@ abstract class AbstractMiddleware implements MiddlewareInterface
 
     /**
      * Return an array of statistics for use in the suffix added to the HTML
+     * @return array{int, int, float}
      */
     protected function getSuffixStatistics(string $original, string $minified): array
     {

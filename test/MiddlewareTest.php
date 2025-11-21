@@ -70,6 +70,7 @@ class MiddlewareTest extends AbstractCase
 
         // @phpstan-ignore-next-line
         $array = $middleware->publicGetSuffixStatistics($original, $minified);
+        /** @var array{int, int, float} $array */
 
         self::assertSame(70, $array[0]);
         self::assertSame(49, $array[1]);
@@ -89,6 +90,9 @@ class MiddlewareTest extends AbstractCase
                 return $this->containsHtml($response);
             }
 
+            /**
+             * @return array{int, int, float}
+             */
             public function publicGetSuffixStatistics(string $original, string $minified): array
             {
                 return $this->getSuffixStatistics($original, $minified);
