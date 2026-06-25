@@ -39,8 +39,13 @@ requirement could not be resolved and `composer update` aborted.
 - [x] `middlewares/utils` `^3.3` → **`^4.0`** — installs **4.0.2**. v4 declares
   explicit nullable parameter types, which **clears all five implicitly-nullable
   deprecations** previously listed in §2.
-- [x] `laminas/laminas-servicemanager` `^3.12` left as-is — `composer update -W`
-  selects PHP 8.5-compatible **3.24.0**.
+- [x] `laminas/laminas-servicemanager` `^3.12` → **`^3.12 || ^4.5`** — installs
+  **4.5.1**. servicemanager is a declared-but-unused dependency here (`src/` has a
+  single `AbstractMiddleware.php` with no laminas usage), so allowing the 4.x
+  major is safe. This is required downstream: `ctw/ctw-middleware-pagecache`'s
+  `laminas/laminas-cache ^4.3` (the first PHP 8.5-compatible cache line) requires
+  `laminas/laminas-servicemanager ^4.5`, which the old `^3.12`-only pin made
+  unsatisfiable.
 
 `composer update -W` now completes cleanly (rc=0). The `php85` branch is
 published on Satis as `dev-php85`, so downstream `ctw/ctw-middleware-*` packages
