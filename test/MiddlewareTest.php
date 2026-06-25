@@ -127,8 +127,6 @@ final class MiddlewareTest extends AbstractCase
 
     /**
      * Test that getSuffixStatistics() throws a DivisionByZeroError when the original is empty.
-     *
-     * @throws DivisionByZeroError When the original length is zero.
      */
     public function testGetSuffixStatisticsThrowsDivisionByZeroErrorWhenOriginalIsEmpty(): void
     {
