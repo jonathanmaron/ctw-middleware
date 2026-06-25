@@ -25,57 +25,42 @@ composer phpstan
 
 ---
 
-## 1. `composer update -W` — ❌ FAILS (hard blocker)
+## 1. `composer update -W` — ✅ FIXED
 
-```
-Problem 1
-  - Root composer.json requires laminas/laminas-diactoros ^2.11
-  - laminas/laminas-diactoros[2.11 ... 2.26] require php ~8.0 || ~8.1 || ~8.2 || ~8.3
-    -> your php version (8.5.7) does not satisfy that requirement.
-```
+**Root cause (was):** the entire `laminas/laminas-diactoros` **2.x** line caps
+PHP at `~8.3.0`. No 2.x release supports PHP 8.4/8.5, so under PHP 8.5.7 the
+requirement could not be resolved and `composer update` aborted.
 
-**Root cause:** the entire `laminas/laminas-diactoros` **2.x** line caps PHP at
-`~8.3.0`. There is no 2.x release that supports PHP 8.4/8.5, so under PHP 8.5.7
-the requirement cannot be resolved and `composer update` aborts (nothing is
-installed/updated).
+**Applied fix (`composer.json`):**
 
-- [ ] **`composer.json`** — bump `laminas/laminas-diactoros` from `^2.11` to
-  **`^3.0`** (Diactoros 3.x requires PHP ^8.1 and supports 8.4/8.5).
-  - [ ] After the bump, re-run `composer update -W` and resolve any *secondary*
-    conflicts that only surface once Diactoros is unblocked (likely candidates:
-    `laminas/laminas-servicemanager ^3.12` — confirm a PHP 8.5-compatible
-    release is selected; `middlewares/utils ^3.3`; `psr/http-message ^1.0` →
-    Diactoros 3 wants `psr/http-message ^1.1 || ^2.0`, so this constraint very
-    likely needs widening to `^1.1 || ^2.0`).
-  - [ ] Tag & publish a new release (e.g. `4.1.0` / `5.0.0`) to the Satis repo so
-    the downstream `ctw/ctw-middleware-*` packages can update.
+- [x] `laminas/laminas-diactoros` `^2.11` → **`^3.0`** — installs **3.8.0**.
+- [x] `psr/http-message` `^1.0` → **`^1.1 || ^2.0`** (required by Diactoros 3) —
+  installs **1.1**.
+- [x] `middlewares/utils` `^3.3` → **`^4.0`** — installs **4.0.2**. v4 declares
+  explicit nullable parameter types, which **clears all five implicitly-nullable
+  deprecations** previously listed in §2.
+- [x] `laminas/laminas-servicemanager` `^3.12` left as-is — `composer update -W`
+  selects PHP 8.5-compatible **3.24.0**.
 
-> Because `composer update` aborts, the runtime findings in §2 were captured
-> against the **existing** (master) lockfile and may shift once the dependency
-> tree is actually updated.
+`composer update -W` now completes cleanly (rc=0). The `php85` branch is
+published on Satis as `dev-php85`, so downstream `ctw/ctw-middleware-*` packages
+consume this fix by requiring `ctw/ctw-middleware: dev-php85` (re-tag to a stable
+release before the upgrade lands on `master`).
+
+- [ ] **Remaining (step 2):** tag & publish a stable release (e.g. `4.1.0` /
+  `5.0.0`) so downstream packages can pin a release instead of `dev-php85`.
 
 ---
 
-## 2. PHP 8.5 runtime deprecations
+## 2. PHP 8.5 runtime deprecations — ✅ RESOLVED
 
-All five originate in the **third-party** `middlewares/utils` dependency (not in
-this package's own source). They are the "implicitly nullable parameter"
-deprecation (deprecated since PHP 8.4, still emitted under 8.5):
+The five "implicitly nullable parameter" deprecations originated in
+**`middlewares/utils` v3.3.0** (`Dispatcher::run()`, `Factory::createUploadedFile()`
+×3, `CallableHandler::__construct()`). The **`middlewares/utils ^4.0`** bump in §1
+(v4.0.2 uses explicit `?type` parameters) clears all of them.
 
-| Location | Method / parameter |
-| --- | --- |
-| `vendor/middlewares/utils/src/Dispatcher.php:21` | `Dispatcher::run()` `$request` |
-| `vendor/middlewares/utils/src/Factory.php:88` | `Factory::createUploadedFile()` `$size` |
-| `vendor/middlewares/utils/src/Factory.php:90` | `Factory::createUploadedFile()` `$filename` |
-| `vendor/middlewares/utils/src/Factory.php:91` | `Factory::createUploadedFile()` `$mediaType` |
-| `vendor/middlewares/utils/src/CallableHandler.php:25` | `CallableHandler::__construct()` `$responseFactory` |
-
-- [ ] These are **not** fixable in this repo's `src/`. Resolution path: after the
-  Diactoros bump unblocks `composer update`, verify whether a newer
-  `middlewares/utils` release (within or above `^3.3`) clears them. If the latest
-  release still emits them, an upstream fix / replacement is required (track
-  separately). No first-party source changes are needed in `ctw/ctw-middleware`
-  itself.
+- [x] Verified: `phpunit --no-coverage` now reports **5 tests, 10 assertions, 0
+  deprecations**.
 
 ---
 
@@ -101,11 +86,10 @@ deprecation (deprecated since PHP 8.4, still emitted under 8.5):
 
 | Check | Result |
 | --- | --- |
-| `composer update -W` | ❌ fails — `laminas-diactoros` 2.x vs PHP 8.5 (§1) |
-| PHPUnit (`--no-coverage`, stale deps) | 5 tests, 10 assertions, **5 deprecations** (all `middlewares/utils`, §2) |
+| `composer update -W` | ✅ clean (diactoros 3.8.0, middlewares/utils 4.0.2, psr/http-message 1.1) |
+| PHPUnit (`--no-coverage`) | ✅ 5 tests, 10 assertions, **0 deprecations** |
 | Rector (dry-run) | ✅ no changes proposed |
-| PHPStan | ❌ 4 errors (all shared unmatched-ignore, §3) |
+| PHPStan | ❌ 2 errors (shared unmatched-ignore from `ctw/ctw-qa`, §3) |
 
-**Order of work:** §1 first (unblocks everything), then re-evaluate §2, then §3
-(in `ctw-qa`). Once §1 lands and is published, the downstream `*-middleware-*`
-packages can be updated.
+Only §3 (the shared PHPStan unmatched-ignore pattern, owned by `ctw/ctw-qa`)
+remains; it is a QA-tooling nit, not a runtime issue.
