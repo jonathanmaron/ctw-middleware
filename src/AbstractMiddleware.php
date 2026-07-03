@@ -21,30 +21,25 @@ abstract class AbstractMiddleware implements MiddlewareInterface
     protected const HTML_MIME_TYPES
         = ['text/html', 'application/xhtml'];
 
+    #[\NoDiscard]
     protected function containsHtml(ResponseInterface $response): bool
     {
         $header = $response->getHeader('Content-Type');
 
-        if ([] === $header) {
-            return false;
-        }
-
-        foreach (self::HTML_MIME_TYPES as $needle) {
-            foreach ($header as $haystack) {
-                $pos = strpos($haystack, $needle);
-                if (is_int($pos)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return array_any(
+            self::HTML_MIME_TYPES,
+            static fn(string $mimeType): bool => array_any(
+                $header,
+                static fn(string $headerValue): bool => str_contains($headerValue, $mimeType),
+            ),
+        );
     }
 
     /**
      * Return an array of statistics for use in the suffix added to the HTML
      * @return array{int, int, float}
      */
+    #[\NoDiscard]
     protected function getSuffixStatistics(string $original, string $minified): array
     {
         $in      = mb_strlen($original);
