@@ -100,7 +100,6 @@ final class MiddlewareTest extends AbstractCase
         // @phpstan-ignore-next-line
         $array = $middleware->publicGetSuffixStatistics($original, $minified);
         /** @var array{int, int, float} $array */
-
         self::assertSame(70, $array[0]);
         self::assertSame(49, $array[1]);
         self::assertSame(30.0, $array[2]);
@@ -119,7 +118,6 @@ final class MiddlewareTest extends AbstractCase
         // @phpstan-ignore-next-line
         $array = $middleware->publicGetSuffixStatistics($original, $minified);
         /** @var array{int, int, float} $array */
-
         self::assertSame(8, $array[0]);
         self::assertSame(12, $array[1]);
         self::assertSame(-50.0, $array[2]);
@@ -167,6 +165,48 @@ final class MiddlewareTest extends AbstractCase
     }
 
     /**
+     * Test that containsHtml() returns true for the real-world application/xhtml+xml Content-Type,
+     * since the HTML MIME type is matched as a substring of the header value.
+     */
+    public function testContainsHtmlReturnsTrueWhenContentTypeIsApplicationXhtmlXml(): void
+    {
+        $stack    = [$middleware = $this->getInstance()];
+        $response = Dispatcher::run($stack);
+        $response = $response->withHeader('Content-Type', 'application/xhtml+xml');
+
+        // @phpstan-ignore-next-line
+        self::assertTrue($middleware->publicContainsHtml($response));
+    }
+
+    /**
+     * Test that containsHtml() returns false when every value of a multi-valued Content-Type header is a non-HTML MIME type.
+     */
+    public function testContainsHtmlReturnsFalseWhenAllContentTypeValuesAreNonHtml(): void
+    {
+        $stack    = [$middleware = $this->getInstance()];
+        $response = Dispatcher::run($stack);
+        $response = $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withAddedHeader('Content-Type', 'application/xml');
+
+        // @phpstan-ignore-next-line
+        self::assertFalse($middleware->publicContainsHtml($response));
+    }
+
+    /**
+     * Test that containsHtml() matches MIME types case-sensitively and therefore returns false for an uppercase HTML MIME type such as TEXT/HTML.
+     */
+    public function testContainsHtmlReturnsFalseWhenHtmlMimeTypeIsUppercase(): void
+    {
+        $stack    = [$middleware = $this->getInstance()];
+        $response = Dispatcher::run($stack);
+        $response = $response->withHeader('Content-Type', 'TEXT/HTML');
+
+        // @phpstan-ignore-next-line
+        self::assertFalse($middleware->publicContainsHtml($response));
+    }
+
+    /**
      * Test that getSuffixStatistics() reports a zero saving when the minified output equals the original.
      */
     public function testGetSuffixStatisticsReportsZeroSavingWhenMinifiedEqualsOriginal(): void
@@ -178,7 +218,6 @@ final class MiddlewareTest extends AbstractCase
         // @phpstan-ignore-next-line
         $array = $middleware->publicGetSuffixStatistics($html, $html);
         /** @var array{int, int, int} $array */
-
         self::assertSame(16, $array[0]);
         self::assertSame(16, $array[1]);
         // When the percentage is a whole number PHP's division yields an int, so the saving is int 0 here.
@@ -195,7 +234,6 @@ final class MiddlewareTest extends AbstractCase
         // @phpstan-ignore-next-line
         $array = $middleware->publicGetSuffixStatistics('<p>x</p>', '');
         /** @var array{int, int, int} $array */
-
         self::assertSame(8, $array[0]);
         self::assertSame(0, $array[1]);
         // When the percentage is a whole number PHP's division yields an int, so the full saving is int 100 here.
@@ -216,7 +254,6 @@ final class MiddlewareTest extends AbstractCase
         // @phpstan-ignore-next-line
         $array = $middleware->publicGetSuffixStatistics($original, $minified);
         /** @var array{int, int, float} $array */
-
         self::assertSame(2, $array[0]);
         self::assertSame(1, $array[1]);
         self::assertSame(50.0, $array[2]);
